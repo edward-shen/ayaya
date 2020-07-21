@@ -1,0 +1,13 @@
+[package]
+name = "ayaya"
+version = "1.0.0"
+authors = ["Edward Shen <code@eddie.sh>"]
+edition = "2018"
+description = "AYAYA"
+readme = "README.md"
+repository = "https://github.com/edward-shen/ayaya"
+license = "MIT OR Apache-2.0"
+keywords = ["ayaya", "weeb", "meme"]
+categories = ["command-line-utilities"]
+
+[dependencies]
