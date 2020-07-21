@@ -1,6 +1,10 @@
 # Ayaya
 
-![AYAYA](ayaya.jpg)
+![AYAYA!](ayaya.jpg)
+
+Image generated from [Manytool's Image to ANSI art converter tool][converter].
+
+[converter]: https://manytools.org/hacker-tools/convert-image-to-ansi-art
 
 ## License
 
