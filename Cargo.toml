@@ -13,9 +13,6 @@ exclude = ["ayaya.jpg"]
 
 [dependencies]
 miniz_oxide = "0.4"
-# While no references of this exist in the source, we need memory primitives
-# in scope for the linker.
-# compiler_builtins = { git = "https://github.com/rust-lang/compiler-builtins", features=["mem"] }
 
 [profile.dev]
 panic = "abort"
