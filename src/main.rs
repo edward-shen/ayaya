@@ -55,20 +55,10 @@ fn main() {
 
 #[panic_handler]
 unsafe fn panic(_: &core::panic::PanicInfo) -> ! {
-    asm!(
-        "syscall",
-        in("rax") 60, // SYS_exit
-        in("rdi") 1,  // exit code
-        options(noreturn)
-    );
+    loop {}
 }
 
 #[alloc_error_handler]
 unsafe fn panic_alloc(_: core::alloc::Layout) -> ! {
-    asm!(
-        "syscall",
-        in("rax") 60, // SYS_exit
-        in("rdi") 2,  // exit code
-        options(noreturn)
-    );
+    loop {}
 }

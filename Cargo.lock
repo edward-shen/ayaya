@@ -16,14 +16,8 @@ checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
 name = "ayaya"
 version = "2.0.0"
 dependencies = [
- "compiler_builtins",
  "miniz_oxide",
 ]
-
-[[package]]
-name = "compiler_builtins"
-version = "0.1.39"
-source = "git+https://github.com/rust-lang/compiler-builtins#e6fd1b272ff4cc34810e20126ffe17888a708f39"
 
 [[package]]
 name = "miniz_oxide"
