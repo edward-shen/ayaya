@@ -23,8 +23,8 @@ unsafe impl GlobalAlloc for DummyAllocator {
 pub unsafe extern "C" fn _start() -> ! {
     asm!(
         "call main",
-        "mov rax, 60",
-        "mov rdi, 0",
+        "mov rax, 60", // SYS_exit
+        "mov rdi, 0",  // exit code
         "syscall",
         options(noreturn)
     )
@@ -58,7 +58,7 @@ unsafe fn panic(_: &core::panic::PanicInfo) -> ! {
     asm!(
         "syscall",
         in("rax") 60, // SYS_exit
-        in("rdi") 1, // exit code
+        in("rdi") 1,  // exit code
         options(noreturn)
     );
 }
@@ -68,7 +68,7 @@ unsafe fn panic_alloc(_: core::alloc::Layout) -> ! {
     asm!(
         "syscall",
         in("rax") 60, // SYS_exit
-        in("rdi") 2, // exit code
+        in("rdi") 2,  // exit code
         options(noreturn)
     );
 }
