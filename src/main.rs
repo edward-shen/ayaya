@@ -31,7 +31,7 @@ pub unsafe extern "C" fn _start() -> ! {
 }
 
 #[no_mangle]
-unsafe fn main() {
+fn main() {
     let mut decompressor = DecompressorOxide::new();
     decompressor.init();
     let mut out = [0u8; 68865];
@@ -42,13 +42,15 @@ unsafe fn main() {
         0,
         inflate_flags::TINFL_FLAG_USING_NON_WRAPPING_OUTPUT_BUF,
     );
-    asm!(
-        "syscall",
-        in("rax") 1, // SYS_write
-        in("rdi") 1, // stdout
-        in("rsi") out.as_ptr(),
-        in("rdx") out.len(),
-    );
+    unsafe {
+        asm!(
+            "syscall",
+            in("rax") 1, // SYS_write
+            in("rdi") 1, // stdout
+            in("rsi") out.as_ptr(),
+            in("rdx") out.len(),
+        );
+    }
 }
 
 #[panic_handler]
