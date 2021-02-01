@@ -1,6 +1,6 @@
 [package]
 name = "ayaya"
-version = "1.0.0"
+version = "2.0.0"
 authors = ["Edward Shen <code@eddie.sh>"]
 edition = "2018"
 description = "AYAYA"
@@ -9,5 +9,18 @@ repository = "https://github.com/edward-shen/ayaya"
 license = "MIT OR Apache-2.0"
 keywords = ["ayaya", "weeb", "meme"]
 categories = ["command-line-utilities"]
+exclude = ["ayaya.jpg"]
 
 [dependencies]
+libc = { version = "0.2", default-features = false }
+miniz_oxide = "0.4"
+wee_alloc = "0.4"
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+opt-level = "z"
+panic = "abort"
+lto = true
+codegen-units = 1
