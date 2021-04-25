@@ -1,8 +1,6 @@
 #![no_std]
 #![no_main]
-#![feature(alloc_error_handler, asm, link_args, naked_functions)]
-// This is used despite the warning
-#![link_args = "-nostartfiles"]
+#![feature(alloc_error_handler, asm, naked_functions)]
 
 use core::alloc::{GlobalAlloc, Layout};
 use core::ptr::null_mut;
@@ -59,6 +57,6 @@ unsafe fn panic(_: &core::panic::PanicInfo) -> ! {
 }
 
 #[alloc_error_handler]
-unsafe fn panic_alloc(_: core::alloc::Layout) -> ! {
+unsafe fn panic_alloc(_: Layout) -> ! {
     loop {}
 }
