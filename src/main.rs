@@ -101,6 +101,7 @@ extern "stdcall" {
     fn GetStdHandle(nStdHandle : i32) -> *const i8;
     fn WriteFile(hFile : *const i8, lpBuffer : *const u8, nNumberOfBytesToWrite : u32, lpNumberOfBytesWritten : usize, lpOverlapped : usize) -> i32;
 }
+
 #[cfg(target_os = "windows")]
 #[no_mangle]
 pub static _fltused: i32 = 0;
