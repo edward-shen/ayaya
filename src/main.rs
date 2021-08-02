@@ -16,6 +16,7 @@ unsafe impl GlobalAlloc for DummyAllocator {
     unsafe fn dealloc(&self, _ptr: *mut u8, _layout: Layout) {}
 }
 
+#[cfg(all(target_os = "linux", target_arch="x86_64"))]
 #[no_mangle]
 #[naked]
 pub unsafe extern "C" fn _start() -> ! {
@@ -26,6 +27,13 @@ pub unsafe extern "C" fn _start() -> ! {
         "syscall",
         options(noreturn)
     )
+}
+
+#[cfg(all(target_os = "windows"))]
+#[no_mangle]
+pub unsafe extern "C" fn mainCRTStartup() -> u32 {
+    main();
+    return 0;
 }
 
 #[no_mangle]
@@ -40,6 +48,14 @@ fn main() {
         0,
         inflate_flags::TINFL_FLAG_USING_NON_WRAPPING_OUTPUT_BUF,
     );
+    write(&out);
+}
+
+#[cfg(all(target_os = "linux", target_arch="x86_64"))]
+#[no_mangle]
+#[inline(always)]
+fn write(out : &[u8; 68865])
+{
     unsafe {
         asm!(
             "syscall",
@@ -47,6 +63,23 @@ fn main() {
             in("rdi") 1, // stdout
             in("rsi") out.as_ptr(),
             in("rdx") out.len(),
+        );
+    }
+}
+
+#[cfg(target_os = "windows")]
+#[no_mangle]
+#[inline(always)]
+fn write(out : &[u8; 68865])
+{
+    unsafe {
+        SetConsoleOutputCP(65001);
+        WriteFile(
+            GetStdHandle(-11 /* STD_OUTPUT_HANDLE */),
+            out.as_ptr(),
+            out.len() as u32,
+            0,
+            0
         );
     }
 }
@@ -60,3 +93,18 @@ unsafe fn panic(_: &core::panic::PanicInfo) -> ! {
 unsafe fn panic_alloc(_: Layout) -> ! {
     loop {}
 }
+
+#[cfg(target_os = "windows")]
+#[link(name = "Kernel32")]
+extern "stdcall" {
+    fn SetConsoleOutputCP(codepage : u32) -> i32;
+    fn GetStdHandle(nStdHandle : i32) -> *const i8;
+    fn WriteFile(hFile : *const i8, lpBuffer : *const u8, nNumberOfBytesToWrite : u32, lpNumberOfBytesWritten : usize, lpOverlapped : usize) -> i32;
+}
+#[cfg(target_os = "windows")]
+#[no_mangle]
+pub static _fltused: i32 = 0;
+
+#[cfg(target_os = "windows")]
+#[link(name = "libcmt")]
+extern "C" {}
