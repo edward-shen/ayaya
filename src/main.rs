@@ -22,12 +22,12 @@ unsafe impl GlobalAlloc for DummyAllocator {
 
 #[panic_handler]
 unsafe fn panic(_: &PanicInfo) -> ! {
-    loop {}
+    asm!("hlt", options(nomem, nostack, noreturn));
 }
 
 #[alloc_error_handler]
 unsafe fn panic_alloc(_: Layout) -> ! {
-    loop {}
+    asm!("hlt", options(nomem, nostack, noreturn));
 }
 
 // Linux Library Globals #######################################################
