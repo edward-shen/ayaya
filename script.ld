@@ -1,0 +1,6 @@
+ENTRY(a)
+
+SECTIONS
+{
+  . = SIZEOF_HEADERS;
+}

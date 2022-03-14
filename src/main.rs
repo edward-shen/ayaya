@@ -1,8 +1,10 @@
 #![no_std]
 #![no_main]
-#![feature(alloc_error_handler, asm, naked_functions)]
+#![feature(alloc_error_handler, naked_functions)]
 
 use core::alloc::{GlobalAlloc, Layout};
+use core::arch::asm;
+use core::panic::PanicInfo;
 use core::ptr::null_mut;
 use miniz_oxide::inflate::core::{decompress, inflate_flags, DecompressorOxide};
 
@@ -19,7 +21,7 @@ unsafe impl GlobalAlloc for DummyAllocator {
 }
 
 #[panic_handler]
-unsafe fn panic(_: &core::panic::PanicInfo) -> ! {
+unsafe fn panic(_: &PanicInfo) -> ! {
     loop {}
 }
 
@@ -35,9 +37,9 @@ unsafe fn panic_alloc(_: Layout) -> ! {
 #[naked]
 #[no_mangle]
 #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
-pub unsafe extern "C" fn _start() -> ! {
+pub unsafe extern "C" fn a() -> ! {
     asm!(
-        "call main",
+        "call m",
         "mov rax, 60", // SYS_exit
         "mov rdi, 0",  // exit code
         "syscall",
@@ -81,7 +83,7 @@ extern "C" {}
 const BUFFER_SIZE: usize = 68865;
 
 #[no_mangle]
-fn main() {
+fn m() {
     let mut decompressor = DecompressorOxide::new();
     decompressor.init();
     let mut out = [0u8; BUFFER_SIZE];
@@ -92,13 +94,13 @@ fn main() {
         0,
         inflate_flags::TINFL_FLAG_USING_NON_WRAPPING_OUTPUT_BUF,
     );
-    write(&out);
+    w(&out);
 }
 
 #[no_mangle]
 #[inline(always)]
 #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
-fn write(out: &[u8; BUFFER_SIZE]) {
+fn w(out: &[u8; BUFFER_SIZE]) {
     unsafe {
         asm!(
             "syscall",
@@ -113,7 +115,7 @@ fn write(out: &[u8; BUFFER_SIZE]) {
 #[no_mangle]
 #[inline(always)]
 #[cfg(target_os = "windows")]
-fn write(out: &[u8; BUFFER_SIZE]) {
+fn w(out: &[u8; BUFFER_SIZE]) {
     unsafe {
         SetConsoleOutputCP(65001);
         WriteFile(
