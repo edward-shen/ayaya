@@ -4,10 +4,14 @@
 
 ## Installation
 
-You must be running Linux. MacOS support not guaranteed.
+You must be running Linux or Windows. MacOS support not guaranteed. Windows
+platform support currently at Tier 3.
 
-1. `cargo install ayaya`
+1. `cargo install --target=<TARGET_TRIPLE> -Z build-std -Z build-std-features=compiler-builtins-mem,panic_immediate_abort ayaya`
 2. `ayaya`
+
+`<TARGET_TRIPLE>` represents your current target triple, and must be specified.
+For example, on Linux, this would be `x86_64-unknown-linux-gnu`.
 
 ## Credits and License
 
