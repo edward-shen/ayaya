@@ -6,7 +6,7 @@
 
 ### Building manually
 
-This method is recommended as it produces the smallest binary size, 6732 bytes.
+This method is recommended as it produces the smallest binary size, 6596 bytes.
 
 You must be running Linux or Windows. MacOS support not guaranteed. Windows
 platform support currently at Tier 3. The instructions below are for Linux,
