@@ -13,3 +13,10 @@ Good question. It's because I decided to turn this into an experiment to get the
 smallest binary size available. To do so, we've done some very... drastic
 decisions, from not linking against `libc` to compiling the `core` and `alloc`
 crates ourselves to optimize for size.
+
+### Crates.io vs manually building
+
+The reason why we can't have a smaller size on crates.io is that cargo currently
+doesn't support post-build hooks. This results in the inability to consistently
+run `upx` after building, which means that the smallest binary we can push to
+crates.io for building is limited.

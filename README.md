@@ -4,6 +4,21 @@
 
 ## Installation
 
+### Building manually
+
+This method is recommended as it produces the smallest binary size, 6732 bytes.
+
+You must be running Linux or Windows. MacOS support not guaranteed. Windows
+platform support currently at Tier 3. The instructions below are for Linux,
+please modify for your platform as needed.
+
+1. `./build.sh`
+2. `mv target/<TARGET_TRIPLE>/release/ayaya ~/.cargo/bin/`
+
+### Via crates.io
+
+This method is discouraged as it produces a larger binary size, 15352 bytes.
+
 You must be running Linux or Windows. MacOS support not guaranteed. Windows
 platform support currently at Tier 3.
 

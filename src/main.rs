@@ -6,7 +6,6 @@ use core::alloc::{GlobalAlloc, Layout};
 use core::arch::asm;
 use core::panic::PanicInfo;
 use core::ptr::null_mut;
-use miniz_oxide::inflate::core::{decompress, inflate_flags, DecompressorOxide};
 
 // Rust globals ################################################################
 
@@ -80,27 +79,36 @@ extern "C" {}
 
 // Program start ###############################################################
 
-const BUFFER_SIZE: usize = 68865;
-
 #[no_mangle]
 fn m() {
-    let mut decompressor = DecompressorOxide::new();
-    decompressor.init();
-    let mut out = [0u8; BUFFER_SIZE];
-    decompress(
-        &mut decompressor,
-        include_bytes!("ayaya.utf.ans.DEFLATE"),
-        &mut out,
-        0,
-        inflate_flags::TINFL_FLAG_USING_NON_WRAPPING_OUTPUT_BUF,
-    );
-    w(&out);
+    #[cfg(not(feature = "smaller"))]
+    {
+        const BUFFER_SIZE: usize = 68865;
+        use miniz_oxide::inflate::core::{decompress, inflate_flags, DecompressorOxide};
+
+        let mut decompressor = DecompressorOxide::new();
+        decompressor.init();
+        let mut out = [0u8; BUFFER_SIZE];
+        decompress(
+            &mut decompressor,
+            include_bytes!("ayaya.utf.ans.DEFLATE"),
+            &mut out,
+            0,
+            inflate_flags::TINFL_FLAG_USING_NON_WRAPPING_OUTPUT_BUF,
+        );
+        w(&out);
+    }
+
+    #[cfg(feature = "smaller")]
+    {
+        w(include_bytes!("ayaya.utf.ans"));
+    }
 }
 
 #[no_mangle]
 #[inline(always)]
 #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
-fn w(out: &[u8; BUFFER_SIZE]) {
+fn w(out: &[u8]) {
     unsafe {
         asm!(
             "syscall",
@@ -115,7 +123,7 @@ fn w(out: &[u8; BUFFER_SIZE]) {
 #[no_mangle]
 #[inline(always)]
 #[cfg(target_os = "windows")]
-fn w(out: &[u8; BUFFER_SIZE]) {
+fn w(out: &[u8]) {
     unsafe {
         SetConsoleOutputCP(65001);
         WriteFile(

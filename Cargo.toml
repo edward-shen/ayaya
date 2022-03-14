@@ -12,7 +12,11 @@ categories = ["command-line-utilities"]
 exclude = ["ayaya.jpg"]
 
 [dependencies]
-miniz_oxide = "0.5"
+miniz_oxide = { version = "0.5", optional = true }
+
+[features]
+default = ["miniz_oxide"]
+smaller = []
 
 [profile.dev]
 panic = "abort"
