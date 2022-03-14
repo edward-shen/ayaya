@@ -1,6 +1,6 @@
 [package]
 name = "ayaya"
-version = "2.0.1"
+version = "2.0.2"
 authors = ["Edward Shen <code@eddie.sh>"]
 edition = "2018"
 description = "AYAYA"
