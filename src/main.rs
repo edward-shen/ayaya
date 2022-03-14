@@ -89,7 +89,7 @@ fn m() {
     let mut out = [0u8; BUFFER_SIZE];
     decompress(
         &mut decompressor,
-        include_bytes!("ayaya.utf.ans.gz"),
+        include_bytes!("ayaya.utf.ans.DEFLATE"),
         &mut out,
         0,
         inflate_flags::TINFL_FLAG_USING_NON_WRAPPING_OUTPUT_BUF,
