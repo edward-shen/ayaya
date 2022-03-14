@@ -50,7 +50,7 @@ pub unsafe extern "C" fn a() -> ! {
 // Window Library Globals ######################################################
 
 #[no_mangle]
-#[cfg(all(target_os = "windows"))]
+#[cfg(target_os = "windows")]
 pub unsafe extern "C" fn mainCRTStartup() -> u32 {
     m();
     return 0;
