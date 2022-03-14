@@ -31,8 +31,7 @@ unsafe fn panic_alloc(_: Layout) -> ! {
 
 // Linux Library Globals #######################################################
 
-/// We need to define our own _start function because the C runtime inserts a
-/// lot of stuff that isn't needed.
+// Keeping this function name a single letter saves us bytes with no_mangle
 #[naked]
 #[no_mangle]
 #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
@@ -79,6 +78,7 @@ extern "C" {}
 
 // Program start ###############################################################
 
+// Keeping this function name a single letter saves us bytes with no_mangle
 #[no_mangle]
 fn m() {
     #[cfg(not(feature = "smaller"))]
