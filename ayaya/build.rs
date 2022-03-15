@@ -5,6 +5,6 @@ fn main() {
 
 fn linux() {
     println!("cargo:rustc-link-arg=-nostartfiles");
-    println!("cargo:rustc-link-arg=-Tscript.ld");
-    println!("cargo:rerun-if-changed=./script.ld");
+    println!("cargo:rustc-link-arg=-T./ayaya/script.ld");
+    println!("cargo:rerun-if-changed=./ayaya/script.ld");
 }

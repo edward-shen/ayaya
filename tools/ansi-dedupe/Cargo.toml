@@ -1,0 +1,9 @@
+[package]
+name = "ansi-dedupe"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1"
+clap = { version = "3", features = ["derive"] }
+nom = "7"

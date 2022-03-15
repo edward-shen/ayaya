@@ -1,6 +1,6 @@
 #![no_std]
 #![no_main]
-#![feature(alloc_error_handler, naked_functions)]
+#![feature(alloc_error_handler, naked_functions, slice_as_chunks)]
 
 use core::alloc::{GlobalAlloc, Layout};
 use core::arch::asm;
@@ -78,25 +78,66 @@ extern "C" {}
 
 // Program start ###############################################################
 
+mod mapping;
+
+const CHAR_BUF_SIZE: usize = 3;
+
+/// Stolen from u8::to_string, except without allocating
+// Keeping this function name a single letter saves us bytes with no_mangle
+#[no_mangle]
+fn b(mut n: u8, buf: &mut [u8; CHAR_BUF_SIZE]) -> &[u8] {
+    let mut index = 0;
+    if n >= 10 {
+        if n >= 100 {
+            buf[index] = b'0' + n / 100;
+            index += 1;
+            n %= 100;
+        }
+        buf[index] = b'0' + n / 10;
+        index += 1;
+        n %= 10;
+    }
+    buf[index] = b'0' + n;
+    index += 1;
+    &buf[..index]
+}
+
 // Keeping this function name a single letter saves us bytes with no_mangle
 #[no_mangle]
 fn m() {
     #[cfg(not(feature = "smaller"))]
     {
-        const BUFFER_SIZE: usize = 68865;
-        use miniz_oxide::inflate::core::{decompress, inflate_flags, DecompressorOxide};
+        let chunks = unsafe { include_bytes!("data").as_chunks_unchecked::<2>() };
+        let mut buf = [0u8; CHAR_BUF_SIZE];
 
-        let mut decompressor = DecompressorOxide::new();
-        decompressor.init();
-        let mut out = [0u8; BUFFER_SIZE];
-        decompress(
-            &mut decompressor,
-            include_bytes!("ayaya.utf.ans.DEFLATE"),
-            &mut out,
-            0,
-            inflate_flags::TINFL_FLAG_USING_NON_WRAPPING_OUTPUT_BUF,
-        );
-        w(&out);
+        for [code, character] in chunks {
+            match code {
+                // Use previous color (don't write new color)
+                254 => {
+                    let real_char =
+                        unsafe { mapping::CHAR_MAPPING.get_unchecked(*character as usize) };
+                    w(real_char.encode_utf8(&mut buf).as_bytes());
+                }
+                // Write newline
+                255 => {
+                    w(&[0x1b]);
+                    w(b"[0m\n");
+                }
+                // Get color from mapping
+                other => {
+                    let (fg, bg) = unsafe { mapping::COLOR_MAPPING.get_unchecked(*other as usize) };
+                    w(&[0x1b]);
+                    w(b"[38;5;");
+                    w(b(*fg, &mut buf));
+                    w(b";48;5;");
+                    w(b(*bg, &mut buf));
+                    w(b"m");
+                    let real_char =
+                        unsafe { mapping::CHAR_MAPPING.get_unchecked(*character as usize) };
+                    w(real_char.encode_utf8(&mut buf).as_bytes());
+                }
+            }
+        }
     }
 
     #[cfg(feature = "smaller")]
