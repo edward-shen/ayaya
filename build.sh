@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-(cd ayaya && cargo build --release) # --features smaller)
+(cd ayaya && cargo build --release --features smaller)
 
 FILE_NAME="target/x86_64-unknown-linux-gnu/release/ayaya"
 
