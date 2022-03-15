@@ -92,15 +92,18 @@ fn b(mut n: u8, buf: &mut [u8; CHAR_BUF_SIZE]) -> &[u8] {
     let mut index = 0;
     if n >= 10 {
         if n >= 100 {
-            buf[index] = b'0' + n / 100;
+            let mut_ref = unsafe { buf.get_unchecked_mut(index) };
+            *mut_ref = b'0' + n / 100;
             index += 1;
             n %= 100;
         }
-        buf[index] = b'0' + n / 10;
+        let mut_ref = unsafe { buf.get_unchecked_mut(index) };
+        *mut_ref = b'0' + n / 10;
         index += 1;
         n %= 10;
     }
-    buf[index] = b'0' + n;
+    let mut_ref = unsafe { buf.get_unchecked_mut(index) };
+    *mut_ref = b'0' + n;
     index += 1;
     &buf[..index]
 }
