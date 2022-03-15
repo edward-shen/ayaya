@@ -7,6 +7,13 @@ If you're running Linux, it should be as simple as a `./build.sh`. If you're
 running some other operating system, you'll need to specify a target (or locally
 edit the `.cargo/config.toml` file).
 
+To build and run `ayaya`, you must cd into the subdir, this is because there's a
+`.cargo` conf file that's not picked up if you run it in the project root.
+
+`tools/ansi-dedupe` takes in a file and generates a custom encoding for provided
+file. This outputs two files, which can be moved into the src directory of
+`ayaya`.
+
 ### Why is this crate so complicated?
 
 Good question. It's because I decided to turn this into an experiment to get the
