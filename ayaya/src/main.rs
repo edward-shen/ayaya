@@ -150,10 +150,11 @@ fn m() {
 #[inline(always)]
 #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
 fn w(out: &[u8]) {
+    let mut _s = 1;
     unsafe {
         asm!(
             "syscall",
-            in("rax") 1, // SYS_write
+            inout("rax") _s, // SYS_write
             in("rdi") 1, // stdout
             in("rsi") out.as_ptr(),
             in("rdx") out.len(),
