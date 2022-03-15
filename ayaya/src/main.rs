@@ -78,12 +78,15 @@ extern "C" {}
 
 // Program start ###############################################################
 
+#[cfg(not(feature = "smaller"))]
 mod mapping;
 
+#[cfg(not(feature = "smaller"))]
 const CHAR_BUF_SIZE: usize = 3;
 
 /// Stolen from u8::to_string, except without allocating
 // Keeping this function name a single letter saves us bytes with no_mangle
+#[cfg(not(feature = "smaller"))]
 #[no_mangle]
 fn b(mut n: u8, buf: &mut [u8; CHAR_BUF_SIZE]) -> &[u8] {
     let mut index = 0;
@@ -150,14 +153,17 @@ fn m() {
 #[inline(always)]
 #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
 fn w(out: &[u8]) {
-    let mut _s = 1;
     unsafe {
         asm!(
             "syscall",
-            inout("rax") _s, // SYS_write
+            in("rax") 1, // SYS_write
             in("rdi") 1, // stdout
             in("rsi") out.as_ptr(),
             in("rdx") out.len(),
+            out("rcx") _,
+            out("r11") _,
+            lateout("rax") _,
+            options(nostack),
         );
     }
 }
