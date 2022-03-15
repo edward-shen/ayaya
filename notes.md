@@ -27,3 +27,15 @@ The reason why we can't have a smaller size on crates.io is that cargo currently
 doesn't support post-build hooks. This results in the inability to consistently
 run `upx` after building, which means that the smallest binary we can push to
 crates.io for building is limited.
+
+### Custom encoding
+
+To reduce file size, we're using a custom encoding scheme produced by
+`ansi-dedupe`. The rules are as followed:
+
+- `0xff`: Represents a ANSI reset followed by a newline.
+- `0xfb` to `0xfe`: Print just the shade character, where `0xfb` is a space and
+`0xfe` is `\u{2593}`, which is `UNICODE DARK SHADE`. This is because it's very
+common to just print out another character, so this lets up save a byte.
+- `0x00` to `0x??`: Selects a foreground and background color from the lookup
+table. The next byte represent which character to print.

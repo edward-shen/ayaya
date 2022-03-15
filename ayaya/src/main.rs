@@ -113,25 +113,34 @@ fn b(mut n: u8, buf: &mut [u8; CHAR_BUF_SIZE]) -> &[u8] {
 fn m() {
     #[cfg(not(feature = "smaller"))]
     {
-        let chunks = unsafe { include_bytes!("data").as_chunks_unchecked::<2>() };
+        let data = include_bytes!("data");
         let mut buf = [0u8; CHAR_BUF_SIZE];
-
-        for [code, character] in chunks {
+        let mut index = 0;
+        while index != data.len() {
+            let code = data[index];
             match code {
                 // Use previous color (don't write new color)
-                254 => {
-                    let real_char =
-                        unsafe { mapping::CHAR_MAPPING.get_unchecked(*character as usize) };
-                    w(real_char.encode_utf8(&mut buf).as_bytes());
+                0xfb => {
+                    w(' '.encode_utf8(&mut buf).as_bytes());
+                }
+                0xfc => {
+                    w('\u{2591}'.encode_utf8(&mut buf).as_bytes());
+                }
+                0xfd => {
+                    w('\u{2592}'.encode_utf8(&mut buf).as_bytes());
+                }
+                0xfe => {
+                    w('\u{2593}'.encode_utf8(&mut buf).as_bytes());
                 }
                 // Write newline
-                255 => {
+                0xff => {
                     w(&[0x1b]);
                     w(b"[0m\n");
                 }
                 // Get color from mapping
                 other => {
-                    let (fg, bg) = unsafe { mapping::COLOR_MAPPING.get_unchecked(*other as usize) };
+                    let character = data[index + 1];
+                    let (fg, bg) = unsafe { mapping::COLOR_MAPPING.get_unchecked(other as usize) };
                     w(&[0x1b]);
                     w(b"[38;5;");
                     w(b(*fg, &mut buf));
@@ -139,10 +148,12 @@ fn m() {
                     w(b(*bg, &mut buf));
                     w(b"m");
                     let real_char =
-                        unsafe { mapping::CHAR_MAPPING.get_unchecked(*character as usize) };
+                        unsafe { mapping::CHAR_MAPPING.get_unchecked(character as usize) };
                     w(real_char.encode_utf8(&mut buf).as_bytes());
+                    index += 1;
                 }
             }
+            index += 1;
         }
     }
 

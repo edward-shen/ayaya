@@ -123,21 +123,21 @@ fn main() -> Result<()> {
         data.iter()
             .fold(Vec::with_capacity(data.len() * 3), |mut accum, value| {
                 match value {
-                    Ansi::Character { color, character } => {
-                        match color {
-                            Color::Inherit => accum.push(254),
-                            Color::Value {
-                                foreground,
-                                background,
-                            } => accum
-                                .push(*rev_color_mapping.get(&(*foreground, *background)).unwrap()),
+                    Ansi::Character { color, character } => match color {
+                        Color::Inherit => {
+                            accum.push(0xfb + *rev_char_mapping.get(character).unwrap());
                         }
-                        accum.push(*rev_char_mapping.get(character).unwrap());
-                    }
+                        Color::Value {
+                            foreground,
+                            background,
+                        } => {
+                            accum
+                                .push(*rev_color_mapping.get(&(*foreground, *background)).unwrap());
+                            accum.push(*rev_char_mapping.get(character).unwrap());
+                        }
+                    },
                     Ansi::Newline => {
-                        accum.push(255);
-                        // doesn't matter
-                        accum.push(0);
+                        accum.push(0xff);
                     }
                 }
                 accum
